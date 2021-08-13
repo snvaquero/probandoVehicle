@@ -21,23 +21,6 @@ namespace Vehicles.API.Controllers
             return View(await _context.DocumentTypes.ToListAsync());
         }
 
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            DocumentType documentType = await _context.DocumentTypes
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (documentType == null)
-            {
-                return NotFound();
-            }
-
-            return View(documentType);
-        }
-
         public IActionResult Create()
         {
             return View();
@@ -117,14 +100,6 @@ namespace Vehicles.API.Controllers
                 return NotFound();
             }
 
-            return View(documentType);
-        }
-
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            DocumentType documentType = await _context.DocumentTypes.FindAsync(id);
             _context.DocumentTypes.Remove(documentType);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
