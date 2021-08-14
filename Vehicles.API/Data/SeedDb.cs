@@ -127,9 +127,18 @@ namespace Vehicles.API.Data
         {
             if (!_context.Brands.Any())
             {
-                _context.Brands.Add(new Brand { Description = "Yamaha" });
+                _context.Brands.Add(new Brand { Description = "Ducati" });
+                _context.Brands.Add(new Brand { Description = "Harley Davidson" });
+                _context.Brands.Add(new Brand { Description = "KTM" });
+                _context.Brands.Add(new Brand { Description = "BMW" });
+                _context.Brands.Add(new Brand { Description = "Triumph" });
+                _context.Brands.Add(new Brand { Description = "Victoria" });
                 _context.Brands.Add(new Brand { Description = "Honda" });
                 _context.Brands.Add(new Brand { Description = "Suzuki" });
+                _context.Brands.Add(new Brand { Description = "Kawasaky" });
+                _context.Brands.Add(new Brand { Description = "TVS" });
+                _context.Brands.Add(new Brand { Description = "Bajaj" });
+                _context.Brands.Add(new Brand { Description = "AKT" });
                 _context.Brands.Add(new Brand { Description = "Kawasaky" });
                 await _context.SaveChangesAsync();
             }
