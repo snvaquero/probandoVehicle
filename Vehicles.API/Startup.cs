@@ -41,6 +41,9 @@ namespace Vehicles.API
 
             services.AddTransient<SeedDb>();
             services.AddScoped<IUserHelper, UserHelper>();
+            services.AddScoped<IBlobHelper, BlobHelper>();
+            services.AddScoped<IConverterHelper, ConverterHelper>();
+            services.AddScoped<ICombosHelper, CombosHelper>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

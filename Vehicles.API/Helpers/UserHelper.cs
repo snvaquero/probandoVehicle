@@ -62,6 +62,7 @@ namespace Vehicles.API.Helpers
         {
             return await _context.Users
                 .Include(u => u.DocumentType)
+                .Include(u => u.Vehicles)
                 .FirstOrDefaultAsync(u => u.Email == email);
         }
 
