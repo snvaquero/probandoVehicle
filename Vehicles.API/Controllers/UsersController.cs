@@ -7,6 +7,7 @@ using Vehicles.API.Data;
 using Vehicles.API.Data.Entities;
 using Vehicles.API.Helpers;
 using Vehicles.API.Models;
+using Vehicles.Common.Enums;
 
 namespace Vehicles.API.Controllers
 {
@@ -16,13 +17,15 @@ namespace Vehicles.API.Controllers
         private readonly DataContext _context;
         private readonly IBlobHelper _blobHelper;
         private readonly IConverterHelper _converterHelper;
+        private readonly ICombosHelper _combosHelper;
         private readonly IUserHelper _userHelper;
 
-        public UsersController(DataContext context, IBlobHelper blobHelper, IConverterHelper converterHelper, IUserHelper userHelper)
+        public UsersController(DataContext context, IBlobHelper blobHelper, IConverterHelper converterHelper, ICombosHelper combosHelper, IUserHelper userHelper)
         {
             _context = context;
             _blobHelper = blobHelper;
             _converterHelper = converterHelper;
+            _combosHelper = combosHelper;
             _userHelper = userHelper;
         }
 
@@ -33,7 +36,11 @@ namespace Vehicles.API.Controllers
 
         public IActionResult Create()
         {
-            UserViewModel model = new UserViewModel();
+            UserViewModel model = new UserViewModel
+            {
+                DocumentTypes = _combosHelper.GetComboDocumentTypes()
+            };
+
             return View(model);
         }
 
@@ -50,9 +57,9 @@ namespace Vehicles.API.Controllers
                     imageId = await _blobHelper.UploadBlobAsync(model.ImageFile, "users");
                 }
 
-                // ACA voy, falta colocar el combo de los documentos
-
                 User user = _converterHelper.ToUser(model, imageId, true);
+                user.UserType = UserType.User;
+                user.UserName = model.Email;
                 await _userHelper.AddUserAsync(user, "123456");
                 await _userHelper.AddUserToRoleAsync(user, user.UserType.ToString());
                 return RedirectToAction(nameof(Index));

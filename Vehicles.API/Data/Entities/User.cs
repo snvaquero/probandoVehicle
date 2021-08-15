@@ -19,7 +19,6 @@ namespace Vehicles.API.Data.Entities
         public string LastName { get; set; }
 
         [Display(Name = "Tipo de documento")]
-        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public DocumentType DocumentType { get; set; }
 
         [Display(Name = "Documento")]

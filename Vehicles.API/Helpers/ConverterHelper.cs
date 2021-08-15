@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Vehicles.API.Data;
 using Vehicles.API.Data.Entities;
 using Vehicles.API.Models;
 
@@ -9,6 +10,13 @@ namespace Vehicles.API.Helpers
 {
     public class ConverterHelper : IConverterHelper
     {
+        private readonly DataContext _context;
+
+        public ConverterHelper(DataContext context)
+        {
+            _context = context;
+        }
+
         public User ToUser(UserViewModel model, Guid imageId, bool isNew)
         {
             return new User
@@ -22,7 +30,7 @@ namespace Vehicles.API.Helpers
                 LastName = model.LastName,
                 PhoneNumber = model.PhoneNumber,
                 UserName = model.UserName,
-                DocumentType = model.DocumentType,
+                DocumentType = _context.DocumentTypes.Find(model.DocumentTypeId),
                 UserType = model.UserType,
                 Vehicles = model.Vehicles
             };
