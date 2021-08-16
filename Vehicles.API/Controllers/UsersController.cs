@@ -147,5 +147,7 @@ namespace Vehicles.API.Controllers
 
             return View(user);
         }
+
+        // Voy aqui, falta crear el vehículo
     }
 }
