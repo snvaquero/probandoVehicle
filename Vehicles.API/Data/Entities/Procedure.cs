@@ -10,5 +10,10 @@ namespace Vehicles.API.Data.Entities
         [MaxLength(50, ErrorMessage = "El campo {0} no puede tener más de {1} carácteres.")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string Description { get; set; }
+
+        [Display(Name = "Precio Mano de Obra")]
+        [DisplayFormat(DataFormatString = "{0:C2}")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
+        public decimal Price { get; set; }
     }
 }

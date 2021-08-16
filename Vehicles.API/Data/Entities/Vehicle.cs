@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace Vehicles.API.Data.Entities
 {
@@ -7,11 +9,9 @@ namespace Vehicles.API.Data.Entities
         public int Id { get; set; }
 
         [Display(Name = "Tipo de vehículo")]
-        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public VehicleType VehicleType { get; set; }
 
         [Display(Name = "Marca")]
-        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public Brand Brand { get; set; }
 
         [Display(Name = "Modelo")]
@@ -24,7 +24,22 @@ namespace Vehicles.API.Data.Entities
         public string Plaque { get; set; }
 
         [Display(Name = "Propietario")]
-        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public User User { get; set; }
+
+        public ICollection<History> Histories { get; set; }
+
+        [Display(Name = "# Historias")]
+        public int HistoriesCount => Histories == null ? 0 : Histories.Count;
+
+        public ICollection<VehiclePhoto> VehiclePhotos { get; set; }
+
+        [Display(Name = "# Fotos")]
+        public int VehiclePhotosCount => VehiclePhotos == null ? 0 : VehiclePhotos.Count;
+
+        [Display(Name = "Foto")]
+        public string ImageFullPath => VehiclePhotos == null || VehiclePhotos.Count == 0
+            ? $"https://localhost:44389/images/noimage.png"
+            : VehiclePhotos.FirstOrDefault().ImageFullPath;
+
     }
 }

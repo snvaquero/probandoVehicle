@@ -30,7 +30,7 @@ namespace Vehicles.API.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Description")] Procedure procedure)
+        public async Task<IActionResult> Create(Procedure procedure)
         {
             if (ModelState.IsValid)
             {
@@ -58,7 +58,7 @@ namespace Vehicles.API.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Description")] Procedure procedure)
+        public async Task<IActionResult> Edit(int id, Procedure procedure)
         {
             if (id != procedure.Id)
             {
