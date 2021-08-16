@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Threading.Tasks;
 using Vehicles.API.Data.Entities;
 using Vehicles.API.Models;
@@ -9,7 +10,13 @@ namespace Vehicles.API.Helpers
     {
         Task<User> GetUserAsync(string email);
 
+        Task<User> GetUserAsync(Guid userId);
+
         Task<IdentityResult> AddUserAsync(User user, string password);
+
+        Task<IdentityResult> DeleteUserAsync(User user);
+
+        Task<IdentityResult> UpdateUser(User user);
 
         Task CheckRoleAsync(string roleName);
 

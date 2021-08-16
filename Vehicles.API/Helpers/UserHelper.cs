@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Threading.Tasks;
 using Vehicles.API.Data;
 using Vehicles.API.Data.Entities;
@@ -69,6 +70,32 @@ namespace Vehicles.API.Helpers
         public async Task<bool> IsUserInRoleAsync(User user, string roleName)
         {
             return await _userManager.IsInRoleAsync(user, roleName);
+        }
+
+        public async Task<IdentityResult> DeleteUserAsync(User user)
+        {
+            return await _userManager.DeleteAsync(user);
+        }
+
+        public async Task<IdentityResult> UpdateUser(User user)
+        {
+            User currentUser = await GetUserAsync(user.Email);
+            currentUser.LastName = user.LastName;
+            currentUser.FirstName = user.LastName;
+            currentUser.DocumentType = user.DocumentType;
+            currentUser.Document = user.Document;
+            currentUser.Address = user.Address;
+            currentUser.ImageId = user.ImageId;
+            currentUser.PhoneNumber = user.PhoneNumber;
+            return await _userManager.UpdateAsync(currentUser);
+        }
+
+        public async Task<User> GetUserAsync(Guid userId)
+        {
+            return await _context.Users
+                .Include(u => u.DocumentType)
+                .Include(u => u.Vehicles)
+                .FirstOrDefaultAsync(u => u.Id == userId.ToString());
         }
     }
 }

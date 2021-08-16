@@ -11,10 +11,12 @@ namespace Vehicles.API.Helpers
     public class ConverterHelper : IConverterHelper
     {
         private readonly DataContext _context;
+        private readonly ICombosHelper _combosHelper;
 
-        public ConverterHelper(DataContext context)
+        public ConverterHelper(DataContext context, ICombosHelper combosHelper)
         {
             _context = context;
+            _combosHelper = combosHelper;
         }
 
         public User ToUser(UserViewModel model, Guid imageId, bool isNew)
@@ -51,7 +53,9 @@ namespace Vehicles.API.Helpers
                 UserName = user.UserName,
                 DocumentType = user.DocumentType,
                 UserType = user.UserType,
-                Vehicles = user.Vehicles
+                Vehicles = user.Vehicles,
+                DocumentTypeId = user.DocumentType.Id,
+                DocumentTypes = _combosHelper.GetComboDocumentTypes()
             };
         }
     }
