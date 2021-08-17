@@ -218,7 +218,7 @@ namespace Vehicles.API.Controllers
             {
                 if (dbUpdateException.InnerException.Message.Contains("duplicate"))
                 {
-                    ModelState.AddModelError(string.Empty, "Ya existe ese registro.");
+                    ModelState.AddModelError(string.Empty, "Ya existe un vehículo con esa placa.");
                 }
                 else
                 {
