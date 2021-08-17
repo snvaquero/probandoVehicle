@@ -19,12 +19,26 @@ namespace Vehicles.API.Data.Entities
         public int Model { get; set; }
 
         [Display(Name = "Placa")]
-        [StringLength(6, ErrorMessage = "El campo {0} debe tener {1} carácteres.")]
+        [StringLength(6, MinimumLength = 6, ErrorMessage = "El campo {0} debe tener {1} carácteres.")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string Plaque { get; set; }
 
+        [Display(Name = "Línea")]
+        [MaxLength(50, ErrorMessage = "El campo {0} no puede tener más de {1} carácteres.")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
+        public string Line { get; set; }
+
+        [Display(Name = "Color")]
+        [MaxLength(50, ErrorMessage = "El campo {0} no puede tener más de {1} carácteres.")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
+        public string Color { get; set; }
+
         [Display(Name = "Propietario")]
         public User User { get; set; }
+
+        [Display(Name = "Observación")]
+        [DataType(DataType.MultilineText)]
+        public string Remarks { get; set; }
 
         public ICollection<History> Histories { get; set; }
 
@@ -40,6 +54,5 @@ namespace Vehicles.API.Data.Entities
         public string ImageFullPath => VehiclePhotos == null || VehiclePhotos.Count == 0
             ? $"https://localhost:44389/images/noimage.png"
             : VehiclePhotos.FirstOrDefault().ImageFullPath;
-
     }
 }

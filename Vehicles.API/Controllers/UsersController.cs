@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Vehicles.API.Data;
 using Vehicles.API.Data.Entities;
@@ -57,7 +58,7 @@ namespace Vehicles.API.Controllers
                     imageId = await _blobHelper.UploadBlobAsync(model.ImageFile, "users");
                 }
 
-                User user = _converterHelper.ToUser(model, imageId, true);
+                User user = await _converterHelper.ToUserAsync(model, imageId, true);
                 user.UserType = UserType.User;
                 user.UserName = model.Email;
                 await _userHelper.AddUserAsync(user, "123456");
@@ -117,7 +118,7 @@ namespace Vehicles.API.Controllers
                     imageId = await _blobHelper.UploadBlobAsync(model.ImageFile, "users");
                 }
 
-                User user = _converterHelper.ToUser(model, imageId, false);
+                User user = await _converterHelper.ToUserAsync(model, imageId, false);
                 await _userHelper.UpdateUser(user);
                 return RedirectToAction(nameof(Index));
             }
@@ -139,6 +140,8 @@ namespace Vehicles.API.Controllers
                 .ThenInclude(x => x.Brand)
                 .Include(x => x.Vehicles)
                 .ThenInclude(x => x.VehicleType)
+                .Include(x => x.Vehicles)
+                .ThenInclude(x => x.VehiclePhotos)
                 .FirstOrDefaultAsync(x => x.Id == id);
             if (user == null)
             {
@@ -148,6 +151,88 @@ namespace Vehicles.API.Controllers
             return View(user);
         }
 
-        // Voy aqui, falta crear el vehículo
+        public async Task<IActionResult> AddVehicle(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return NotFound();
+            }
+
+            User user = await _context.Users
+                .Include(x => x.Vehicles)
+                .FirstOrDefaultAsync(x => x.Id == id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            VehicleViewModel model = new VehicleViewModel
+            {
+                UserId = user.Id,
+                Brands = _combosHelper.GetComboBrands(),
+                VehicleTypes = _combosHelper.GetComboVehicleTypes()
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddVehicle(VehicleViewModel vehicleViewModel)
+        {
+            User user = await _context.Users
+                .Include(x => x.Vehicles)
+                .FirstOrDefaultAsync(x => x.Id == vehicleViewModel.UserId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                Guid imageId = Guid.Empty;
+
+                if (vehicleViewModel.ImageFile != null)
+                {
+                    imageId = await _blobHelper.UploadBlobAsync(vehicleViewModel.ImageFile, "vehicles");
+                }
+
+                Vehicle vehicle = await _converterHelper.ToVehicleAsync(vehicleViewModel, true);
+                if (vehicle.VehiclePhotos == null)
+                {
+                    vehicle.VehiclePhotos = new List<VehiclePhoto>();
+                }
+
+                vehicle.VehiclePhotos.Add(new VehiclePhoto
+                {
+                    ImageId = imageId
+                });
+
+                user.Vehicles.Add(vehicle);
+                _context.Update(user);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction($"{nameof(Index)}");
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                if (dbUpdateException.InnerException.Message.Contains("duplicate"))
+                {
+                    ModelState.AddModelError(string.Empty, "Ya existe ese registro.");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, dbUpdateException.InnerException.Message);
+                }
+            }
+            catch (Exception exception)
+            {
+                ModelState.AddModelError(string.Empty, exception.Message);
+            }
+
+            vehicleViewModel.Brands = _combosHelper.GetComboBrands();
+            vehicleViewModel.VehicleTypes = _combosHelper.GetComboVehicleTypes();
+            return View(vehicleViewModel);
+        }
     }
 }
