@@ -140,6 +140,9 @@ namespace Vehicles.API.Data
                 _context.Brands.Add(new Brand { Description = "Bajaj" });
                 _context.Brands.Add(new Brand { Description = "AKT" });
                 _context.Brands.Add(new Brand { Description = "Yamaha" });
+                _context.Brands.Add(new Brand { Description = "Chevrolet" });
+                _context.Brands.Add(new Brand { Description = "Mazda" });
+                _context.Brands.Add(new Brand { Description = "Renault" });
                 await _context.SaveChangesAsync();
             }
         }
