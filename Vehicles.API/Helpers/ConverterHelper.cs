@@ -73,6 +73,7 @@ namespace Vehicles.API.Helpers
                 VehiclePhotos = model.VehiclePhotos,
                 Brand = await _context.Brands.FindAsync(model.BrandId),
                 VehicleType = await _context.VehicleTypes.FindAsync(model.VehicleTypeId),
+                Remarks = model.Remarks
             };
         }
 
@@ -93,7 +94,9 @@ namespace Vehicles.API.Helpers
                 VehiclePhotos = vehicle.VehiclePhotos,
                 VehicleType = vehicle.VehicleType,
                 VehicleTypeId = vehicle.VehicleType.Id,
-                VehicleTypes = _combosHelper.GetComboVehicleTypes()
+                VehicleTypes = _combosHelper.GetComboVehicleTypes(),
+                UserId = vehicle.User.Id,
+                Remarks = vehicle.Remarks
             };
         }
     }

@@ -263,7 +263,9 @@ namespace Vehicles.API.Controllers
                 return NotFound();
             }
 
-            VehiclePhoto vehiclePhoto = await _context.VehiclePhotos.FindAsync(id);
+            VehiclePhoto vehiclePhoto = await _context.VehiclePhotos
+                .Include(x => x.Vehicle)
+                .FirstOrDefaultAsync(x => x.Id == id);
             if (vehiclePhoto == null)
             {
                 return NotFound();
@@ -271,7 +273,7 @@ namespace Vehicles.API.Controllers
 
             _context.VehiclePhotos.Remove(vehiclePhoto);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(EditVehicle), new { id });
+            return RedirectToAction(nameof(EditVehicle), new { id = vehiclePhoto.Vehicle.Id });
         }
 
         public async Task<IActionResult> EditVehicle(int? id)
@@ -282,6 +284,7 @@ namespace Vehicles.API.Controllers
             }
 
             Vehicle vehicle = await _context.Vehicles
+                .Include(x => x.User)
                 .Include(x => x.Brand)
                 .Include(x => x.VehicleType)
                 .Include(x => x.VehiclePhotos)
@@ -311,7 +314,8 @@ namespace Vehicles.API.Controllers
                     Vehicle vehicle = await _converterHelper.ToVehicleAsync(vehicleViewModel, false);
                     _context.Update(vehicle);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
+                    User user = await _userHelper.GetUserAsync(Guid.Parse(vehicleViewModel.UserId));
+                    return RedirectToAction(nameof(Details), new { id = user.Id });
                 }
                 catch (DbUpdateException dbUpdateException)
                 {
@@ -332,6 +336,61 @@ namespace Vehicles.API.Controllers
 
             vehicleViewModel.VehicleTypes = _combosHelper.GetComboVehicleTypes();
             return View(vehicleViewModel);
+        }
+
+        public async Task<IActionResult> AddVehicleImage(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            Vehicle vehicle = await _context.Vehicles.FindAsync(id);
+            if (vehicle == null)
+            {
+                return NotFound();
+            }
+
+            VehiclePhotoViewModel model = new VehiclePhotoViewModel
+            {
+                VehicleId = vehicle.Id
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddVehicleImage(VehiclePhotoViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                Guid imageId = Guid.Empty;
+
+                if (model.ImageFile != null)
+                {
+                    imageId = await _blobHelper.UploadBlobAsync(model.ImageFile, "vehicles");
+                }
+
+                Vehicle vehicle = await _context.Vehicles
+                    .Include(x => x.VehiclePhotos)
+                    .FirstOrDefaultAsync(x => x.Id == model.VehicleId);
+                if (vehicle.VehiclePhotos == null)
+                {
+                    vehicle.VehiclePhotos = new List<VehiclePhoto>();
+                }
+
+                vehicle.VehiclePhotos.Add(new VehiclePhoto
+                {
+                    ImageId = imageId
+                });
+
+                _context.Update(vehicle);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(EditVehicle), new { id = vehicle.Id });
+            }
+
+            return View(model);
         }
     }
 }

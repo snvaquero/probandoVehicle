@@ -7,6 +7,8 @@ namespace Vehicles.API.Data.Entities
     {
         public int Id { get; set; }
 
+        public Vehicle Vehicle { get; set; }
+
         [Display(Name = "Foto")]
         public Guid ImageId { get; set; }
 

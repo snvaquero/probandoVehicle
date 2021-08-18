@@ -1,4 +1,4 @@
-﻿@model Vehicles.API.Data.Entities.Vehicle
+﻿@model Vehicles.API.Models.VehicleViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -14,13 +14,14 @@
         <form asp-action="EditVehicle">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="UserId" />
 
             <partial name="_Vehicle" />
 
             <div class="form-group">
                 <input type="submit" value="Guardar" class="btn btn-primary" />
                 <a asp-action="AddVehicleImage" asp-route-id="@Model.Id" class="btn btn-info">Agregar Foto</a>
-                <a asp-action="Index" class="btn btn-success">Regresar</a>
+                <a asp-action="Details"  asp-route-id="@Model.UserId" class="btn btn-success">Regresar</a>
             </div>
         </form>
     </div>
