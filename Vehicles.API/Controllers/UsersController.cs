@@ -695,5 +695,59 @@ namespace Vehicles.API.Controllers
 
             return View(detailViewModel);
         }
+
+        public async Task<IActionResult> EditDetail(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            Detail detail = await _context.Details
+                .Include(x => x.History)
+                .Include(x => x.Procedure)
+                .FirstOrDefaultAsync(x => x.Id == id);
+            if (detail == null)
+            {
+                return NotFound();
+            }
+
+            DetailViewModel model = _converterHelper.ToDetailViewModel(detail);
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditDetail(int id, DetailViewModel detailViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    Detail detail = await _converterHelper.ToDetailAsync(detailViewModel, false);
+                    _context.Update(detail);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(DetailsHistory), new { id = detailViewModel.HistoryId });
+                }
+                catch (DbUpdateException dbUpdateException)
+                {
+                    if (dbUpdateException.InnerException.Message.Contains("duplicate"))
+                    {
+                        ModelState.AddModelError(string.Empty, "Ya existe este registro.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, dbUpdateException.InnerException.Message);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    ModelState.AddModelError(string.Empty, exception.Message);
+                }
+            }
+
+            detailViewModel.Procedures = _combosHelper.GetComboProcedures();
+            return View(detailViewModel);
+        }
     }
 }
