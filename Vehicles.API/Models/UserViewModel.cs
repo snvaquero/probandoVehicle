@@ -13,7 +13,7 @@ namespace Vehicles.API.Models
 
         [Display(Name = "Tipo de documento")]
         [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar un tipo de documento.")]
-        [Required]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public int DocumentTypeId { get; set; }
 
         public IEnumerable<SelectListItem> DocumentTypes { get; set; }

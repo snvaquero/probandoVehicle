@@ -13,14 +13,14 @@ namespace Vehicles.API.Models
 
         [Display(Name = "Tipo de vehículo")]
         [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar un tipo de vehícuo.")]
-        [Required]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public int VehicleTypeId { get; set; }
 
         public IEnumerable<SelectListItem> VehicleTypes { get; set; }
 
         [Display(Name = "Marca")]
         [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar una marca.")]
-        [Required]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public int BrandId { get; set; }
 
         public IEnumerable<SelectListItem> Brands { get; set; }

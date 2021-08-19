@@ -64,7 +64,7 @@
     </div>
 </div>
 <div>
-    <a asp-action="AddProcedure" asp-route-id="@Model.Id" class="btn btn-primary">Adicionar Procedimiento</a>
+    <a asp-action="AddDetail" asp-route-id="@Model.Id" class="btn btn-primary">Adicionar Procedimiento</a>
     <a asp-action="EditHistory" asp-route-id="@Model.Id" class="btn btn-warning">Editar Historia</a>
     <a asp-action="DetailsVehicle" asp-route-id="@Model.Vehicle.Id" class="btn btn-success">Regresar</a>
 </div>
@@ -150,7 +150,7 @@
             });
 
             // Delete item
-            sc_deleteDialog.openModal('deleteItem', true, 'btnYesDelete', '/Users/DeleteProcedure/', false);
+            sc_deleteDialog.openModal('deleteItem', true, 'btnYesDelete', '/Users/DeleteDetail/', false);
         });
     </script>
 }

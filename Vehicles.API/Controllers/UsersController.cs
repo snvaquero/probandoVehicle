@@ -352,6 +352,26 @@ namespace Vehicles.API.Controllers
             return RedirectToAction(nameof(DetailsVehicle), new { id = history.Vehicle.Id });
         }
 
+        public async Task<IActionResult> DeleteDetail(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            Detail detail = await _context.Details
+                .Include(x => x.History)
+                .FirstOrDefaultAsync(x => x.Id == id);
+            if (detail == null)
+            {
+                return NotFound();
+            }
+
+            _context.Details.Remove(detail);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(DetailsHistory), new { id = detail.History.Id });
+        }
+
         public async Task<IActionResult> EditVehicle(int? id)
         {
             if (id == null)
@@ -468,6 +488,7 @@ namespace Vehicles.API.Controllers
 
             return View(model);
         }
+
         public async Task<IActionResult> AddHistory(int? id)
         {
             if (id == null)
@@ -603,6 +624,76 @@ namespace Vehicles.API.Controllers
             }
 
             return View(historyViewModel);
+        }
+
+        public async Task<IActionResult> AddDetail(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            History history = await _context.Histories.FindAsync(id);
+            if (history == null)
+            {
+                return NotFound();
+            }
+
+            DetailViewModel model = new DetailViewModel
+            {
+                HistoryId = history.Id,
+                Procedures = _combosHelper.GetComboProcedures()
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddDetail(DetailViewModel detailViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                History history = await _context.Histories
+                    .Include(x => x.Details)
+                    .FirstOrDefaultAsync(x => x.Id == detailViewModel.HistoryId);
+                if (history == null)
+                {
+                    return NotFound();
+                }
+
+                try
+                {
+                    if (history.Details == null)
+                    {
+                        history.Details = new List<Detail>();
+                    }
+
+                    Detail detail = await _converterHelper.ToDetailAsync(detailViewModel, true);
+                    history.Details.Add(detail);
+                    _context.Update(history);
+                    await _context.SaveChangesAsync();
+
+                    return RedirectToAction(nameof(DetailsHistory), new { id = detailViewModel.HistoryId });
+                }
+                catch (DbUpdateException dbUpdateException)
+                {
+                    if (dbUpdateException.InnerException.Message.Contains("duplicate"))
+                    {
+                        ModelState.AddModelError(string.Empty, "Ya existe este registro.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, dbUpdateException.InnerException.Message);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    ModelState.AddModelError(string.Empty, exception.Message);
+                }
+            }
+
+            return View(detailViewModel);
         }
     }
 }

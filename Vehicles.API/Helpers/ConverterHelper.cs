@@ -10,13 +10,40 @@ namespace Vehicles.API.Helpers
     {
         private readonly DataContext _context;
         private readonly ICombosHelper _combosHelper;
-        private readonly IUserHelper _userHelper;
 
-        public ConverterHelper(DataContext context, ICombosHelper combosHelper, IUserHelper userHelper)
+        public ConverterHelper(DataContext context, ICombosHelper combosHelper)
         {
             _context = context;
             _combosHelper = combosHelper;
-            _userHelper = userHelper;
+        }
+
+        public async Task<Detail> ToDetailAsync(DetailViewModel model, bool isNew)
+        {
+            return new Detail
+            {
+                Id = isNew ? 0 : model.Id,
+                History = await _context.Histories.FindAsync(model.HistoryId),
+                LaborPrice = model.LaborPrice,
+                Procedure = await _context.Procedures.FindAsync(model.ProcedureId),
+                Remarks = model.Remarks,
+                SparePartsPrice = model.SparePartsPrice
+            };
+        }
+
+        public DetailViewModel ToDetailViewModel(Detail detail)
+        {
+            return new DetailViewModel
+            {
+                History = detail.History,
+                HistoryId = detail.History.Id,
+                Id = detail.Id,
+                LaborPrice = detail.LaborPrice,
+                Procedure = detail.Procedure,
+                ProcedureId = detail.Procedure.Id,
+                Procedures = _combosHelper.GetComboProcedures(),
+                Remarks = detail.Remarks,
+                SparePartsPrice = detail.SparePartsPrice
+            };
         }
 
         public async Task<User> ToUserAsync(UserViewModel model, Guid imageId, bool isNew)
