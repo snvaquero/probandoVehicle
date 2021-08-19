@@ -179,6 +179,27 @@ namespace Vehicles.API.Controllers
             return View(vehicle);
         }
 
+        public async Task<IActionResult> DetailsHistory(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            History history = await _context.Histories
+                .Include(x => x.Details)
+                .ThenInclude(x => x.Procedure)
+                .Include(x => x.Vehicle)
+                .ThenInclude(x => x.VehiclePhotos)
+                .FirstOrDefaultAsync(x => x.Id == id);
+            if (history == null)
+            {
+                return NotFound();
+            }
+
+            return View(history);
+        }
+
         public async Task<IActionResult> AddVehicle(string id)
         {
             if (string.IsNullOrEmpty(id))
@@ -315,8 +336,11 @@ namespace Vehicles.API.Controllers
             }
 
             History history = await _context.Histories
-                .Include(x => x.Vehicle)
                 .Include(x => x.Details)
+                .Include(x => x.Vehicle)
+                .ThenInclude(x => x.User)
+                .Include(x => x.Vehicle)
+                .ThenInclude(x => x.VehiclePhotos)
                 .FirstOrDefaultAsync(x => x.Id == id);
             if (history == null)
             {
