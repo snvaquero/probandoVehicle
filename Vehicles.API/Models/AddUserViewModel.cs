@@ -2,7 +2,7 @@
 
 namespace Vehicles.API.Models
 {
-    public class LoginViewModel
+    public class AddUserViewModel : EditUserViewModel
     {
         [Display(Name = "Email")]
         [EmailAddress(ErrorMessage = "Debes introducir un email válido.")]
@@ -15,7 +15,11 @@ namespace Vehicles.API.Models
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string Password { get; set; }
 
-        [Display(Name = "Recordarme")]
-        public bool RememberMe { get; set; }
+        [Display(Name = "Confirmación de contraseña")]
+        [Required(ErrorMessage = "The field {0} is mandatory.")]
+        [DataType(DataType.Password)]
+        [MinLength(6, ErrorMessage = "El campo {0} debe tener una longitud mínima de {1} carácteres.")]
+        [Compare("Password", ErrorMessage = "La contraseña y confirmacíón de contraseña no son iguales.")]
+        public string PasswordConfirm { get; set; }
     }
 }
