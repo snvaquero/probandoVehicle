@@ -142,6 +142,8 @@ namespace Vehicles.API.Controllers
                 .ThenInclude(x => x.VehicleType)
                 .Include(x => x.Vehicles)
                 .ThenInclude(x => x.VehiclePhotos)
+                .Include(x => x.Vehicles)
+                .ThenInclude(x => x.Histories)
                 .FirstOrDefaultAsync(x => x.Id == id);
             if (user == null)
             {
@@ -149,6 +151,30 @@ namespace Vehicles.API.Controllers
             }
 
             return View(user);
+        }
+
+        public async Task<IActionResult> DetailsVehicle(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            Vehicle vehicle = await _context.Vehicles
+                .Include(x => x.User)
+                .Include(x => x.VehicleType)
+                .Include(x => x.Brand)
+                .Include(x => x.VehiclePhotos)
+                .Include(x => x.Histories)
+                .ThenInclude(x => x.Details)
+                .ThenInclude(x => x.Procedure)
+                .FirstOrDefaultAsync(x => x.Id == id);
+            if (vehicle == null)
+            {
+                return NotFound();
+            }
+
+            return View(vehicle);
         }
 
         public async Task<IActionResult> AddVehicle(string id)
@@ -245,6 +271,9 @@ namespace Vehicles.API.Controllers
             Vehicle vehicle = await _context.Vehicles
                 .Include(x => x.User)
                 .Include(x => x.VehiclePhotos)
+                .Include(x => x.Histories)
+                .ThenInclude(x => x.Details)
+                .ThenInclude(x => x.Procedure)
                 .FirstOrDefaultAsync(x => x.Id == id);
             if (vehicle == null)
             {
@@ -274,6 +303,27 @@ namespace Vehicles.API.Controllers
             _context.VehiclePhotos.Remove(vehiclePhoto);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(EditVehicle), new { id = vehiclePhoto.Vehicle.Id });
+        }
+
+        public async Task<IActionResult> DeleteHistory(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            History history = await _context.Histories
+                .Include(x => x.Vehicle)
+                .Include(x => x.Details)
+                .FirstOrDefaultAsync(x => x.Id == id);
+            if (history == null)
+            {
+                return NotFound();
+            }
+
+            _context.Histories.Remove(history);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(DetailsVehicle), new { id = history.Vehicle.Id });
         }
 
         public async Task<IActionResult> EditVehicle(int? id)
@@ -391,6 +441,80 @@ namespace Vehicles.API.Controllers
             }
 
             return View(model);
+        }
+        public async Task<IActionResult> AddHistory(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            Vehicle vehicle = await _context.Vehicles.FindAsync(id);
+            if (vehicle == null)
+            {
+                return NotFound();
+            }
+
+            HistoryViewModel model = new HistoryViewModel
+            {
+                VehicleId = vehicle.Id
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddHistory(HistoryViewModel historyViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                Vehicle vehicle = await _context.Vehicles
+                    .Include(x => x.Histories)
+                    .FirstOrDefaultAsync(x => x.Id == historyViewModel.VehicleId);
+                if (vehicle == null)
+                {
+                    return NotFound();
+                }
+
+                try
+                {
+                    History history = new History
+                    {
+                        Date = DateTime.UtcNow,
+                        Mileage = historyViewModel.Mileage,
+                        Remarks = historyViewModel.Remarks
+                    };
+
+                    if (vehicle.Histories == null)
+                    {
+                        vehicle.Histories = new List<History>();
+                    }
+
+                    vehicle.Histories.Add(history);
+                    _context.Update(vehicle);
+                    await _context.SaveChangesAsync();
+
+                    return RedirectToAction(nameof(DetailsVehicle), new { id = vehicle.Id });
+                }
+                catch (DbUpdateException dbUpdateException)
+                {
+                    if (dbUpdateException.InnerException.Message.Contains("duplicate"))
+                    {
+                        ModelState.AddModelError(string.Empty, "Ya existe un vehículo con esa placa.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, dbUpdateException.InnerException.Message);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    ModelState.AddModelError(string.Empty, exception.Message);
+                }
+            }
+
+            return View(historyViewModel);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace Vehicles.API.Data.Entities
 {
@@ -27,5 +28,17 @@ namespace Vehicles.API.Data.Entities
 
         [Display(Name = "# Detalles")]
         public int DetailsCount => Details == null ? 0 : Details.Count;
+
+        [Display(Name = "Total Mano de Obra")]
+        [DisplayFormat(DataFormatString = "{0:C2}")]
+        public decimal TotalLabor => Details == null ? 0 : Details.Sum(x => x.LaborPrice);
+
+        [Display(Name = "Total Repuestos")]
+        [DisplayFormat(DataFormatString = "{0:C2}")]
+        public decimal TotalSpareParts => Details == null ? 0 : Details.Sum(x => x.SparePartsPrice);
+
+        [Display(Name = "Total")]
+        [DisplayFormat(DataFormatString = "{0:C2}")]
+        public decimal Total => Details == null ? 0 : Details.Sum(x => x.TotalPrice);
     }
 }
