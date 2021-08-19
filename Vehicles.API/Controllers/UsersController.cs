@@ -520,5 +520,65 @@ namespace Vehicles.API.Controllers
 
             return View(historyViewModel);
         }
+
+        public async Task<IActionResult> EditHistory(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            History history = await _context.Histories
+                .Include(x => x.Vehicle)
+                .FirstOrDefaultAsync(x => x.Id == id);
+            if (history == null)
+            {
+                return NotFound();
+            }
+
+            HistoryViewModel model = new HistoryViewModel
+            {
+                Mileage = history.Mileage,
+                Remarks = history.Remarks,
+                VehicleId = history.Vehicle.Id
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditHistory(int id, HistoryViewModel historyViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    History history = await _context.Histories.FindAsync(id);
+                    history.Mileage = historyViewModel.Mileage;
+                    history.Remarks = historyViewModel.Remarks;
+                    _context.Update(history);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(DetailsVehicle), new { id = historyViewModel.VehicleId });
+                }
+                catch (DbUpdateException dbUpdateException)
+                {
+                    if (dbUpdateException.InnerException.Message.Contains("duplicate"))
+                    {
+                        ModelState.AddModelError(string.Empty, "Ya existe un vehículo con esta placa.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, dbUpdateException.InnerException.Message);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    ModelState.AddModelError(string.Empty, exception.Message);
+                }
+            }
+
+            return View(historyViewModel);
+        }
     }
 }
