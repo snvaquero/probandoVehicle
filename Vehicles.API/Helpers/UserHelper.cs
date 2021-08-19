@@ -78,7 +78,7 @@ namespace Vehicles.API.Helpers
             return await _userManager.DeleteAsync(user);
         }
 
-        public async Task<IdentityResult> UpdateUser(User user)
+        public async Task<IdentityResult> UpdateUserAsync(User user)
         {
             User currentUser = await GetUserAsync(user.Email);
             currentUser.LastName = user.LastName;
@@ -129,6 +129,11 @@ namespace Vehicles.API.Helpers
             User newUser = await GetUserAsync(model.Username);
             await AddUserToRoleAsync(newUser, user.UserType.ToString());
             return newUser;
+        }
+
+        public async Task<IdentityResult> ChangePasswordAsync(User user, string oldPassword, string newPassword)
+        {
+            return await _userManager.ChangePasswordAsync(user, oldPassword, newPassword);
         }
     }
 }

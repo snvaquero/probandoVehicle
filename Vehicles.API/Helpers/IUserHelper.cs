@@ -17,7 +17,7 @@ namespace Vehicles.API.Helpers
 
         Task<IdentityResult> DeleteUserAsync(User user);
 
-        Task<IdentityResult> UpdateUser(User user);
+        Task<IdentityResult> UpdateUserAsync(User user);
 
         Task CheckRoleAsync(string roleName);
 
@@ -32,5 +32,7 @@ namespace Vehicles.API.Helpers
         Task<SignInResult> ValidatePasswordAsync(User user, string password);
 
         Task<User> AddUserAsync(AddUserViewModel model, Guid imageId, UserType userType);
+    
+        Task<IdentityResult> ChangePasswordAsync(User user, string oldPassword, string newPassword);
     }
 }

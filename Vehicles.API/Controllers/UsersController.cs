@@ -119,7 +119,7 @@ namespace Vehicles.API.Controllers
                 }
 
                 User user = await _converterHelper.ToUserAsync(model, imageId, false);
-                await _userHelper.UpdateUser(user);
+                await _userHelper.UpdateUserAsync(user);
                 return RedirectToAction(nameof(Index));
             }
 
