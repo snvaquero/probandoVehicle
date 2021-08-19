@@ -12,6 +12,9 @@ namespace Vehicles.API.Data.Entities
         [Display(Name = "Vehículo")]
         public Vehicle Vehicle { get; set; }
 
+        [Display(Name = "Propietario")]
+        public User User { get; set; }
+
         [Display(Name = "Fecha")]
         [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd}")]
         public DateTime Date { get; set; }

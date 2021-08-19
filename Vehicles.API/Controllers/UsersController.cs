@@ -168,6 +168,8 @@ namespace Vehicles.API.Controllers
                 .Include(x => x.Histories)
                 .ThenInclude(x => x.Details)
                 .ThenInclude(x => x.Procedure)
+                .Include(x => x.Histories)
+                .ThenInclude(x => x.User)
                 .FirstOrDefaultAsync(x => x.Id == id);
             if (vehicle == null)
             {
@@ -479,11 +481,13 @@ namespace Vehicles.API.Controllers
 
                 try
                 {
+                    User user = await _userHelper.GetUserAsync(User.Identity.Name);
                     History history = new History
                     {
                         Date = DateTime.UtcNow,
                         Mileage = historyViewModel.Mileage,
-                        Remarks = historyViewModel.Remarks
+                        Remarks = historyViewModel.Remarks,
+                        User = user
                     };
 
                     if (vehicle.Histories == null)
