@@ -14,26 +14,26 @@ namespace Vehicles.API.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly DataContext _context;
         private readonly IUserHelper _userHelper;
+        private readonly DataContext _context;
         private readonly ICombosHelper _combosHelper;
         private readonly IBlobHelper _blobHelper;
         private readonly IMailHelper _mailHelper;
 
-        public AccountController(DataContext context, IUserHelper userHelper, ICombosHelper combosHelper, IBlobHelper blobHelper, IMailHelper mailHelper)
+        public AccountController(IUserHelper userHelper, DataContext context, ICombosHelper combosHelper, IBlobHelper blobHelper, IMailHelper mailHelper)
         {
-            _context = context;
             _userHelper = userHelper;
+            _context = context;
             _combosHelper = combosHelper;
             _blobHelper = blobHelper;
-            _mailHelper = mailHelper;
+            this._mailHelper = mailHelper;
         }
 
         public IActionResult Login()
         {
             if (User.Identity.IsAuthenticated)
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction(nameof(Index), "Home");
             }
 
             return View(new LoginViewModel());
@@ -55,7 +55,7 @@ namespace Vehicles.API.Controllers
                     return RedirectToAction("Index", "Home");
                 }
 
-                ModelState.AddModelError(string.Empty, "Correo o contraseña incorrectos.");
+                ModelState.AddModelError(string.Empty, "Email o contraseña incorrectos.");
             }
 
             return View(model);
@@ -110,12 +110,12 @@ namespace Vehicles.API.Controllers
                     token = myToken
                 }, protocol: HttpContext.Request.Scheme);
 
-                Response response = _mailHelper.SendMail(model.Username, "Vehicles - Confirmación de Email", $"<h1>Vehicles - Confirmación de Email</h1>" +
-                    $"Para habilitar al usuario, " +
-                    $"Por favor hacer clic en el siguiente enlace:</br></br><a href = \"{tokenLink}\">Confirmación de Email</a>");
+                Response response = _mailHelper.SendMail(model.Username, "Vehicles - Confirmación de cuenta", $"<h1>Vehicles - Confirmación de cuenta</h1>" +
+                    $"Para habilitar el usuario, " +
+                    $"por favor hacer clic en el siguiente enlace: </br></br><a href = \"{tokenLink}\">Confirmar Email</a>");
                 if (response.IsSuccess)
                 {
-                    ViewBag.Message = "Las instrucciones para habilitar al usuario han sido enviadas al correo.";
+                    ViewBag.Message = "Las instrucciones para habilitar su cuenta han sido enviadas al correo.";
                     return View(model);
                 }
 
@@ -126,28 +126,6 @@ namespace Vehicles.API.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> ConfirmEmail(string userId, string token)
-        {
-            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
-            {
-                return NotFound();
-            }
-
-            User user = await _userHelper.GetUserAsync(new Guid(userId));
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            IdentityResult result = await _userHelper.ConfirmEmailAsync(user, token);
-            if (!result.Succeeded)
-            {
-                return NotFound();
-            }
-
-            return View();
-        }
-
         public async Task<IActionResult> ChangeUser()
         {
             User user = await _userHelper.GetUserAsync(User.Identity.Name);
@@ -156,7 +134,7 @@ namespace Vehicles.API.Controllers
                 return NotFound();
             }
 
-            EditUserViewModel model = new EditUserViewModel
+            EditUserViewModel model = new()
             {
                 Address = user.Address,
                 FirstName = user.FirstName,
@@ -186,7 +164,6 @@ namespace Vehicles.API.Controllers
                 }
 
                 User user = await _userHelper.GetUserAsync(User.Identity.Name);
-
                 user.FirstName = model.FirstName;
                 user.LastName = model.LastName;
                 user.Address = model.Address;
@@ -194,7 +171,6 @@ namespace Vehicles.API.Controllers
                 user.ImageId = imageId;
                 user.DocumentType = await _context.DocumentTypes.FindAsync(model.DocumentTypeId);
                 user.Document = model.Document;
-
                 await _userHelper.UpdateUserAsync(user);
                 return RedirectToAction("Index", "Home");
             }
@@ -213,13 +189,13 @@ namespace Vehicles.API.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await _userHelper.GetUserAsync(User.Identity.Name);
+                User user = await _userHelper.GetUserAsync(User.Identity.Name);
                 if (user != null)
                 {
-                    var result = await _userHelper.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+                    IdentityResult result = await _userHelper.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
                     if (result.Succeeded)
                     {
-                        return RedirectToAction("ChangeUser");
+                        return RedirectToAction(nameof(ChangeUser));
                     }
                     else
                     {
@@ -233,6 +209,28 @@ namespace Vehicles.API.Controllers
             }
 
             return View(model);
+        }
+
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        {
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
+            {
+                return NotFound();
+            }
+
+            User user = await _userHelper.GetUserAsync(new Guid(userId));
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            IdentityResult result = await _userHelper.ConfirmEmailAsync(user, token);
+            if (!result.Succeeded)
+            {
+                return NotFound();
+            }
+
+            return View();
         }
 
         public IActionResult RecoverPassword()

@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
-using Vehicles.API.Data.Entities;
 
 namespace Vehicles.API.Models
 {
-    public class VehiclePhotoViewModel : VehiclePhoto
+    public class VehiclePhotoViewModel
     {
         public int VehicleId { get; set; }
 

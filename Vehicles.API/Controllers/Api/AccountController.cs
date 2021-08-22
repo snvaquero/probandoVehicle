@@ -10,7 +10,7 @@ using Vehicles.API.Data.Entities;
 using Vehicles.API.Helpers;
 using Vehicles.API.Models;
 
-namespace Vehicles.API.Controllers.Api
+namespace Vehicles.API.Controllers.API
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -34,7 +34,7 @@ namespace Vehicles.API.Controllers.Api
                 User user = await _userHelper.GetUserAsync(model.Username);
                 if (user != null)
                 {
-                    Microsoft.AspNetCore.Identity.SignInResult result = await _userHelper.ValidatePasswordAsync(user, model.Password);
+                    var result = await _userHelper.ValidatePasswordAsync(user, model.Password);
 
                     if (result.Succeeded)
                     {

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Vehicles.API.Data.Entities
 {
@@ -6,10 +7,13 @@ namespace Vehicles.API.Data.Entities
     {
         public int Id { get; set; }
 
+        [JsonIgnore]
         [Display(Name = "Historia")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public History History { get; set; }
 
         [Display(Name = "Procedimiento")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public Procedure Procedure { get; set; }
 
         [Display(Name = "Precio Mano de Obra")]

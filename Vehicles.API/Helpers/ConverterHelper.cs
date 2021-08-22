@@ -34,11 +34,9 @@ namespace Vehicles.API.Helpers
         {
             return new DetailViewModel
             {
-                History = detail.History,
                 HistoryId = detail.History.Id,
                 Id = detail.Id,
                 LaborPrice = detail.LaborPrice,
-                Procedure = detail.Procedure,
                 ProcedureId = detail.Procedure.Id,
                 Procedures = _combosHelper.GetComboProcedures(),
                 Remarks = detail.Remarks,
@@ -50,18 +48,17 @@ namespace Vehicles.API.Helpers
         {
             return new User
             {
-                Id = isNew ? Guid.NewGuid().ToString() : model.Id,
-                ImageId = imageId,
                 Address = model.Address,
                 Document = model.Document,
+                DocumentType = await _context.DocumentTypes.FindAsync(model.DocumentTypeId),
                 Email = model.Email,
                 FirstName = model.FirstName,
+                Id = isNew ? Guid.NewGuid().ToString() : model.Id,
+                ImageId = imageId,
                 LastName = model.LastName,
                 PhoneNumber = model.PhoneNumber,
-                UserName = model.UserName,
-                DocumentType = await _context.DocumentTypes.FindAsync(model.DocumentTypeId),
+                UserName = model.Email,
                 UserType = model.UserType,
-                Vehicles = model.Vehicles
             };
         }
 
@@ -69,20 +66,17 @@ namespace Vehicles.API.Helpers
         {
             return new UserViewModel
             {
-                Id = user.Id,
-                ImageId = user.ImageId,
                 Address = user.Address,
                 Document = user.Document,
+                DocumentTypeId = user.DocumentType.Id,
+                DocumentTypes = _combosHelper.GetComboDocumentTypes(),
                 Email = user.Email,
                 FirstName = user.FirstName,
+                Id = user.Id,
+                ImageId = user.ImageId,
                 LastName = user.LastName,
                 PhoneNumber = user.PhoneNumber,
-                UserName = user.UserName,
-                DocumentType = user.DocumentType,
                 UserType = user.UserType,
-                Vehicles = user.Vehicles,
-                DocumentTypeId = user.DocumentType.Id,
-                DocumentTypes = _combosHelper.GetComboDocumentTypes()
             };
         }
 
@@ -90,40 +84,33 @@ namespace Vehicles.API.Helpers
         {
             return new Vehicle
             {
+                Brand = await _context.Brands.FindAsync(model.BrandId),
+                Color = model.Color,
                 Id = isNew ? 0 : model.Id,
-                Histories = model.Histories,
+                Line = model.Line,
                 Model = model.Model,
                 Plaque = model.Plaque.ToUpper(),
-                Line = model.Line,
-                Color = model.Color,
-                User = model.User,
-                VehiclePhotos = model.VehiclePhotos,
-                Brand = await _context.Brands.FindAsync(model.BrandId),
-                VehicleType = await _context.VehicleTypes.FindAsync(model.VehicleTypeId),
-                Remarks = model.Remarks
+                Remarks = model.Remarks,
+                VehicleType = await _context.VehicleTypes.FindAsync(model.VehicleTypeId)
             };
         }
 
         public VehicleViewModel ToVehicleViewModel(Vehicle vehicle)
         {
-            return new VehicleViewModel
-            {
-                Brand = vehicle.Brand,
+            return new VehicleViewModel 
+            { 
                 BrandId = vehicle.Brand.Id,
                 Brands = _combosHelper.GetComboBrands(),
                 Color = vehicle.Color,
-                Histories = vehicle.Histories,
                 Id = vehicle.Id,
                 Line = vehicle.Line,
                 Model = vehicle.Model,
                 Plaque = vehicle.Plaque.ToUpper(),
-                User = vehicle.User,
-                VehiclePhotos = vehicle.VehiclePhotos,
-                VehicleType = vehicle.VehicleType,
-                VehicleTypeId = vehicle.VehicleType.Id,
-                VehicleTypes = _combosHelper.GetComboVehicleTypes(),
+                Remarks = vehicle.Remarks,
                 UserId = vehicle.User.Id,
-                Remarks = vehicle.Remarks
+                VehiclePhotos = vehicle.VehiclePhotos,
+                VehicleTypeId = vehicle.VehicleType.Id,
+                VehicleTypes = _combosHelper.GetComboVehicleTypes()
             };
         }
     }

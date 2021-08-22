@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 using Vehicles.API.Data;
 using Vehicles.API.Data.Entities;
 
-namespace Vehicles.API.Controllers.Api
+namespace Vehicles.API.Controllers.API
 {
+    [ApiController]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
-    [ApiController]
     public class ProceduresController : ControllerBase
     {
         private readonly DataContext _context;

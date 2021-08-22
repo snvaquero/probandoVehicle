@@ -177,13 +177,13 @@ namespace Vehicles.API.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("HistoryId")
+                    b.Property<int>("HistoryId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("LaborPrice")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("ProcedureId")
+                    b.Property<int>("ProcedureId")
                         .HasColumnType("int");
 
                     b.Property<string>("Remarks")
@@ -240,7 +240,7 @@ namespace Vehicles.API.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int?>("VehicleId")
+                    b.Property<int>("VehicleId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -284,7 +284,6 @@ namespace Vehicles.API.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Address")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -297,7 +296,7 @@ namespace Vehicles.API.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<int?>("DocumentTypeId")
+                    b.Property<int>("DocumentTypeId")
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
@@ -378,7 +377,7 @@ namespace Vehicles.API.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("BrandId")
+                    b.Property<int>("BrandId")
                         .HasColumnType("int");
 
                     b.Property<string>("Color")
@@ -403,9 +402,10 @@ namespace Vehicles.API.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int?>("VehicleTypeId")
+                    b.Property<int>("VehicleTypeId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -432,7 +432,7 @@ namespace Vehicles.API.Migrations
                     b.Property<Guid>("ImageId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("VehicleId")
+                    b.Property<int>("VehicleId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -517,11 +517,15 @@ namespace Vehicles.API.Migrations
                 {
                     b.HasOne("Vehicles.API.Data.Entities.History", "History")
                         .WithMany("Details")
-                        .HasForeignKey("HistoryId");
+                        .HasForeignKey("HistoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Vehicles.API.Data.Entities.Procedure", "Procedure")
-                        .WithMany()
-                        .HasForeignKey("ProcedureId");
+                        .WithMany("Details")
+                        .HasForeignKey("ProcedureId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("History");
 
@@ -536,7 +540,9 @@ namespace Vehicles.API.Migrations
 
                     b.HasOne("Vehicles.API.Data.Entities.Vehicle", "Vehicle")
                         .WithMany("Histories")
-                        .HasForeignKey("VehicleId");
+                        .HasForeignKey("VehicleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
 
@@ -546,8 +552,10 @@ namespace Vehicles.API.Migrations
             modelBuilder.Entity("Vehicles.API.Data.Entities.User", b =>
                 {
                     b.HasOne("Vehicles.API.Data.Entities.DocumentType", "DocumentType")
-                        .WithMany()
-                        .HasForeignKey("DocumentTypeId");
+                        .WithMany("Users")
+                        .HasForeignKey("DocumentTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("DocumentType");
                 });
@@ -555,16 +563,22 @@ namespace Vehicles.API.Migrations
             modelBuilder.Entity("Vehicles.API.Data.Entities.Vehicle", b =>
                 {
                     b.HasOne("Vehicles.API.Data.Entities.Brand", "Brand")
-                        .WithMany()
-                        .HasForeignKey("BrandId");
+                        .WithMany("Vehicles")
+                        .HasForeignKey("BrandId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Vehicles.API.Data.Entities.User", "User")
                         .WithMany("Vehicles")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Vehicles.API.Data.Entities.VehicleType", "VehicleType")
-                        .WithMany()
-                        .HasForeignKey("VehicleTypeId");
+                        .WithMany("Vehicles")
+                        .HasForeignKey("VehicleTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Brand");
 
@@ -577,12 +591,29 @@ namespace Vehicles.API.Migrations
                 {
                     b.HasOne("Vehicles.API.Data.Entities.Vehicle", "Vehicle")
                         .WithMany("VehiclePhotos")
-                        .HasForeignKey("VehicleId");
+                        .HasForeignKey("VehicleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Vehicle");
                 });
 
+            modelBuilder.Entity("Vehicles.API.Data.Entities.Brand", b =>
+                {
+                    b.Navigation("Vehicles");
+                });
+
+            modelBuilder.Entity("Vehicles.API.Data.Entities.DocumentType", b =>
+                {
+                    b.Navigation("Users");
+                });
+
             modelBuilder.Entity("Vehicles.API.Data.Entities.History", b =>
+                {
+                    b.Navigation("Details");
+                });
+
+            modelBuilder.Entity("Vehicles.API.Data.Entities.Procedure", b =>
                 {
                     b.Navigation("Details");
                 });
@@ -597,6 +628,11 @@ namespace Vehicles.API.Migrations
                     b.Navigation("Histories");
 
                     b.Navigation("VehiclePhotos");
+                });
+
+            modelBuilder.Entity("Vehicles.API.Data.Entities.VehicleType", b =>
+                {
+                    b.Navigation("Vehicles");
                 });
 #pragma warning restore 612, 618
         }

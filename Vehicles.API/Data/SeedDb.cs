@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Vehicles.API.Data.Entities;
@@ -21,15 +21,47 @@ namespace Vehicles.API.Data
         public async Task SeedAsync()
         {
             await _context.Database.EnsureCreatedAsync();
+            await CheckVehiclesTypeAsync();
             await CheckBrandsAsync();
             await CheckDocumentTypesAsync();
-            await CheckVehicleTypesAsync();
-            await CheckRolesAsync();
             await CheckProceduresAsync();
-            await CheckUserAsync("1010", "Luis", "Salazar", "luis@yopmail.com", "322 311 4620", "Calle Luna Calle Sol", UserType.Admin);
-            await CheckUserAsync("2020", "Juan", "Zuluaga", "zulu@yopmail.com", "322 311 4620", "Calle Luna Calle Sol", UserType.User);
-            await CheckUserAsync("3030", "Ledys", "Bedoya", "ledys@yopmail.com", "322 311 4620", "Calle Luna Calle Sol", UserType.User);
-            await CheckUserAsync("4040", "Johana", "Ruiz", "johana@yopmail.com", "322 311 4620", "Calle Luna Calle Sol", UserType.User);
+            await CheckRolesAsycn();
+            await CheckUserAsync("1010", "Luis", "Salazar", "luis@yopmail.com", "311 322 4620", "Calle Luna Calle Sol", UserType.Admin);
+            await CheckUserAsync("2020", "Juan", "Zuluaga", "zulu@yopmail.com", "311 322 4620", "Calle Luna Calle Sol", UserType.User);
+            await CheckUserAsync("3030", "Ledys", "Bedoya", "ledys@yopmail.com", "311 322 4620", "Calle Luna Calle Sol", UserType.User);
+            await CheckUserAsync("4040", "Sandra", "Lopera", "sandra@yopmail.com", "311 322 4620", "Calle Luna Calle Sol", UserType.Admin);
+        }
+
+        private async Task CheckUserAsync(string document, string firstName, string lastName, string email, string phoneNumber, string address, UserType userType)
+        {
+            User user = await _userHelper.GetUserAsync(email);
+            if (user == null)
+            {
+                user = new User
+                {
+                    Address = address,
+                    Document = document,
+                    DocumentType = _context.DocumentTypes.FirstOrDefault(x => x.Description == "Cédula"),
+                    Email = email,
+                    FirstName = firstName,
+                    LastName = lastName,
+                    PhoneNumber = phoneNumber,
+                    UserName = email,
+                    UserType = userType
+                };
+
+                await _userHelper.AddUserAsync(user, "123456");
+                await _userHelper.AddUserToRoleAsync(user, userType.ToString());
+
+                string token = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
+                await _userHelper.ConfirmEmailAsync(user, token);
+            }
+        }
+
+        private async Task CheckRolesAsycn()
+        {
+            await _userHelper.CheckRoleAsync(UserType.Admin.ToString());
+            await _userHelper.CheckRoleAsync(UserType.User.ToString());
         }
 
         private async Task CheckProceduresAsync()
@@ -66,57 +98,6 @@ namespace Vehicles.API.Data
             }
         }
 
-        private async Task CheckRolesAsync()
-        {
-            await _userHelper.CheckRoleAsync(UserType.Admin.ToString());
-            await _userHelper.CheckRoleAsync(UserType.User.ToString());
-        }
-
-        private async Task<User> CheckUserAsync(
-            string document,
-            string firstName,
-            string lastName,
-            string email,
-            string phone,
-            string address,
-            UserType userType)
-        {
-            User user = await _userHelper.GetUserAsync(email);
-            if (user == null)
-            {
-                user = new User
-                {
-                    FirstName = firstName,
-                    LastName = lastName,
-                    Email = email,
-                    UserName = email,
-                    PhoneNumber = phone,
-                    Address = address,
-                    Document = document,
-                    UserType = userType,
-                    DocumentType = await _context.DocumentTypes.FirstOrDefaultAsync(d => d.Description == "Cédula"),
-                };
-
-                await _userHelper.AddUserAsync(user, "123456");
-                await _userHelper.AddUserToRoleAsync(user, userType.ToString());
-
-                string token = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
-                await _userHelper.ConfirmEmailAsync(user, token);
-            }
-
-            return user;
-        }
-
-        private async Task CheckVehicleTypesAsync()
-        {
-            if (!_context.VehicleTypes.Any())
-            {
-                _context.VehicleTypes.Add(new VehicleType { Description = "Moto" });
-                _context.VehicleTypes.Add(new VehicleType { Description = "Carro" });
-                await _context.SaveChangesAsync();
-            }
-        }
-
         private async Task CheckDocumentTypesAsync()
         {
             if (!_context.DocumentTypes.Any())
@@ -149,6 +130,16 @@ namespace Vehicles.API.Data
                 _context.Brands.Add(new Brand { Description = "Chevrolet" });
                 _context.Brands.Add(new Brand { Description = "Mazda" });
                 _context.Brands.Add(new Brand { Description = "Renault" });
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        private async Task CheckVehiclesTypeAsync()
+        {
+            if (!_context.VehicleTypes.Any())
+            {
+                _context.VehicleTypes.Add(new VehicleType { Description = "Carro" });
+                _context.VehicleTypes.Add(new VehicleType { Description = "Moto" });
                 await _context.SaveChangesAsync();
             }
         }

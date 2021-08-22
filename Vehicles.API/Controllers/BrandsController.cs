@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Vehicles.API.Data;
 using Vehicles.API.Data.Entities;
@@ -35,9 +34,9 @@ namespace Vehicles.API.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(brand);
                 try
                 {
+                    _context.Add(brand);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
@@ -45,7 +44,7 @@ namespace Vehicles.API.Controllers
                 {
                     if (dbUpdateException.InnerException.Message.Contains("duplicate"))
                     {
-                        ModelState.AddModelError(string.Empty, "Ya existe esa marca.");
+                        ModelState.AddModelError(string.Empty, "Ya existe esta marca.");
                     }
                     else
                     {
@@ -73,6 +72,7 @@ namespace Vehicles.API.Controllers
             {
                 return NotFound();
             }
+
             return View(brand);
         }
 
@@ -97,7 +97,7 @@ namespace Vehicles.API.Controllers
                 {
                     if (dbUpdateException.InnerException.Message.Contains("duplicate"))
                     {
-                        ModelState.AddModelError(string.Empty, "Ya existe este tipo de documento.");
+                        ModelState.AddModelError(string.Empty, "Ya existe esta marca.");
                     }
                     else
                     {
@@ -109,7 +109,6 @@ namespace Vehicles.API.Controllers
                     ModelState.AddModelError(string.Empty, exception.Message);
                 }
             }
-
             return View(brand);
         }
 

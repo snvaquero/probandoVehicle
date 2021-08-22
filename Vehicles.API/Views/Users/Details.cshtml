@@ -74,7 +74,7 @@
                     <thead>
                         <tr>
                             <th>
-                                @Html.DisplayNameFor(model => model.Vehicles.FirstOrDefault().ImageFullPath)
+                                @Html.DisplayNameFor(model => model.Vehicles.FirstOrDefault().Plaque)
                             </th>
                             <th>
                                 @Html.DisplayNameFor(model => model.Vehicles.FirstOrDefault().VehicleType.Description)
@@ -89,13 +89,13 @@
                                 @Html.DisplayNameFor(model => model.Vehicles.FirstOrDefault().Model)
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.Vehicles.FirstOrDefault().Plaque)
-                            </th>
-                            <th>
                                 @Html.DisplayNameFor(model => model.Vehicles.FirstOrDefault().HistoriesCount)
                             </th>
                             <th>
                                 @Html.DisplayNameFor(model => model.Vehicles.FirstOrDefault().VehiclePhotosCount)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Vehicles.FirstOrDefault().ImageFullPath)
                             </th>
                             <th></th>
                         </tr>
@@ -105,7 +105,7 @@
                         {
                         <tr>
                             <td>
-                                <img src="@item.ImageFullPath" style="width:100px;height:100px;max-width: 100%; height: auto;" />
+                                @Html.DisplayFor(modelItem => item.Plaque)
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.VehicleType.Description)
@@ -120,13 +120,13 @@
                                 @Html.DisplayFor(modelItem => item.Model)
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.Plaque)
-                            </td>
-                            <td>
                                 @Html.DisplayFor(modelItem => item.HistoriesCount)
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.VehiclePhotosCount)
+                            </td>
+                            <td>
+                                <img src="@item.ImageFullPath" style="width:100px;height:100px;max-width: 100%; height: auto;" />
                             </td>
                             <td>
                                 <a asp-action="EditVehicle" asp-route-id="@item.Id" class="btn btn-warning">Editar</a>

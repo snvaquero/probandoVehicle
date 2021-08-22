@@ -7,6 +7,7 @@ namespace Vehicles.API.Data.Entities
     {
         public int Id { get; set; }
 
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public Vehicle Vehicle { get; set; }
 
         [Display(Name = "Foto")]
@@ -14,7 +15,7 @@ namespace Vehicles.API.Data.Entities
 
         [Display(Name = "Foto")]
         public string ImageFullPath => ImageId == Guid.Empty
-            ? $"https://vehiclesprep.azurewebsites.net/images/noimage.png"
-            : $"https://vehicleszuluprep.blob.core.windows.net/vehicles/{ImageId}";
+            ? $"https://localhost:44345/images/noimage.png"
+            : $"https://vehicleszulu.blob.core.windows.net/vehiclephotos/{ImageId}";
     }
 }

@@ -6,8 +6,24 @@ using Vehicles.API.Data.Entities;
 
 namespace Vehicles.API.Models
 {
-    public class DetailViewModel : Detail
+    public class DetailViewModel
     {
+        public int Id { get; set; }
+
+        [Display(Name = "Precio Mano de Obra")]
+        [DisplayFormat(DataFormatString = "{0:C2}")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
+        public decimal LaborPrice { get; set; }
+
+        [Display(Name = "Precio Repuestos")]
+        [DisplayFormat(DataFormatString = "{0:C2}")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
+        public decimal SparePartsPrice { get; set; }
+
+        [Display(Name = "Observación")]
+        [DataType(DataType.MultilineText)]
+        public string Remarks { get; set; }
+
         public int HistoryId { get; set; }
 
         [Display(Name = "Procedimiento")]

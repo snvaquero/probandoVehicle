@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 namespace Vehicles.API.Data.Entities
 {
@@ -9,9 +11,11 @@ namespace Vehicles.API.Data.Entities
         public int Id { get; set; }
 
         [Display(Name = "Tipo de vehículo")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public VehicleType VehicleType { get; set; }
 
         [Display(Name = "Marca")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public Brand Brand { get; set; }
 
         [Display(Name = "Modelo")]
@@ -36,16 +40,13 @@ namespace Vehicles.API.Data.Entities
         public string Color { get; set; }
 
         [Display(Name = "Propietario")]
+        [JsonIgnore]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public User User { get; set; }
 
         [Display(Name = "Observación")]
         [DataType(DataType.MultilineText)]
         public string Remarks { get; set; }
-
-        public ICollection<History> Histories { get; set; }
-
-        [Display(Name = "# Historias")]
-        public int HistoriesCount => Histories == null ? 0 : Histories.Count;
 
         public ICollection<VehiclePhoto> VehiclePhotos { get; set; }
 
@@ -54,7 +55,12 @@ namespace Vehicles.API.Data.Entities
 
         [Display(Name = "Foto")]
         public string ImageFullPath => VehiclePhotos == null || VehiclePhotos.Count == 0
-            ? $"https://vehiclesprep.azurewebsites.net/images/noimage.png"
+            ? $"https://localhost:44345/images/noimage.png"
             : VehiclePhotos.FirstOrDefault().ImageFullPath;
+
+        public ICollection<History> Histories { get; set; }
+
+        [Display(Name = "# Historias")]
+        public int HistoriesCount => Histories == null ? 0 : Histories.Count;
     }
 }

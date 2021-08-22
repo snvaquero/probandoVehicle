@@ -16,7 +16,7 @@ namespace Vehicles.API.Models
         public string Password { get; set; }
 
         [Display(Name = "Confirmación de contraseña")]
-        [Required(ErrorMessage = "The field {0} is mandatory.")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         [DataType(DataType.Password)]
         [MinLength(6, ErrorMessage = "El campo {0} debe tener una longitud mínima de {1} carácteres.")]
         [Compare("Password", ErrorMessage = "La contraseña y confirmacíón de contraseña no son iguales.")]

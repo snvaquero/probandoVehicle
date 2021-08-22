@@ -47,8 +47,8 @@ namespace Vehicles.API.Models
 
         [Display(Name = "Foto")]
         public string ImageFullPath => ImageId == Guid.Empty
-            ? $"https://vehiclesprep.azurewebsites.net/images/noimage.png"
-            : $"https://vehicleszuluprep.blob.core.windows.net/users/{ImageId}";
+            ? $"https://localhost:44345/images/noimage.png"
+            : $"https://vehicleszulu.blob.core.windows.net/users/{ImageId}";
 
         [Display(Name = "Foto")]
         public IFormFile ImageFile { get; set; }

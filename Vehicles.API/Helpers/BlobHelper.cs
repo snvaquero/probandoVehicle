@@ -48,5 +48,12 @@ namespace Vehicles.API.Helpers
             await blockBlob.UploadFromStreamAsync(stream);
             return name;
         }
+
+        public async Task DeleteBlobAsync(Guid id, string containerName)
+        {
+            CloudBlobContainer container = _blobClient.GetContainerReference(containerName);
+            CloudBlockBlob blockBlob = container.GetBlockBlobReference($"{id}");
+            await blockBlob.DeleteAsync();
+        }
     }
 }
