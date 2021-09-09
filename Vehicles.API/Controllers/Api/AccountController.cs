@@ -34,7 +34,7 @@ namespace Vehicles.API.Controllers.API
                 User user = await _userHelper.GetUserAsync(model.Username);
                 if (user != null)
                 {
-                    var result = await _userHelper.ValidatePasswordAsync(user, model.Password);
+                    Microsoft.AspNetCore.Identity.SignInResult result = await _userHelper.ValidatePasswordAsync(user, model.Password);
 
                     if (result.Succeeded)
                     {
