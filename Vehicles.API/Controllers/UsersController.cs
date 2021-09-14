@@ -226,14 +226,25 @@ namespace Vehicles.API.Controllers
                 return NotFound();
             }
 
-            User user = await _userHelper.GetUserAsync(Guid.Parse(id));
+            User user = await _context.Users
+                .Include(x => x.Vehicles)
+                .ThenInclude(x => x.VehiclePhotos)
+                .Include(x => x.Vehicles)
+                .ThenInclude(x => x.Histories)
+                .ThenInclude(x => x.Details)
+                .FirstOrDefaultAsync(x => x.Id == id);
             if (user == null)
             {
                 return NotFound();
             }
 
-            await _blobHelper.DeleteBlobAsync(user.ImageId, "users");
-            await _userHelper.DeleteUserAsync(user);
+            if (user.ImageId != Guid.Empty)
+            {
+                await _blobHelper.DeleteBlobAsync(user.ImageId, "users");
+            }
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -244,14 +255,25 @@ namespace Vehicles.API.Controllers
                 return NotFound();
             }
 
-            User user = await _userHelper.GetUserAsync(Guid.Parse(id));
+            User user = await _context.Users
+                .Include(x => x.Vehicles)
+                .ThenInclude(x => x.VehiclePhotos)
+                .Include(x => x.Vehicles)
+                .ThenInclude(x => x.Histories)
+                .ThenInclude(x => x.Details)
+                .FirstOrDefaultAsync(x => x.Id == id);
             if (user == null)
             {
                 return NotFound();
             }
 
-            await _blobHelper.DeleteBlobAsync(user.ImageId, "users");
-            await _userHelper.DeleteUserAsync(user);
+            if (user.ImageId != Guid.Empty)
+            {
+                await _blobHelper.DeleteBlobAsync(user.ImageId, "users");
+            }
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index2));
         }
 

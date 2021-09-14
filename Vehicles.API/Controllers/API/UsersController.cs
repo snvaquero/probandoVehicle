@@ -11,12 +11,11 @@ using Vehicles.API.Data.Entities;
 using Vehicles.API.Helpers;
 using Vehicles.API.Models.Requests;
 using Vehicles.Common.Enums;
-using Vehicles.Common.Models;
 
 namespace Vehicles.API.Controllers.API
 {
     [ApiController]
-    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
@@ -59,8 +58,6 @@ namespace Vehicles.API.Controllers.API
                 .ThenInclude(x => x.Histories)
                 .ThenInclude(x => x.Details)
                 .ThenInclude(x => x.Procedure)
-                .OrderBy(x => x.FirstName)
-                .ThenBy(x => x.LastName)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (user == null)
@@ -168,6 +165,31 @@ namespace Vehicles.API.Controllers.API
             user.PhoneNumber = request.PhoneNumber;
 
             await _userHelper.UpdateUserAsync(user);
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUser(string id)
+        {
+            User user = await _context.Users
+                .Include(x => x.Vehicles)
+                .ThenInclude(x => x.VehiclePhotos)
+                .Include(x => x.Vehicles)
+                .ThenInclude(x => x.Histories)
+                .ThenInclude(x => x.Details)
+                .FirstOrDefaultAsync(x => x.Id == id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            if (user.ImageId != Guid.Empty)
+            {
+                await _blobHelper.DeleteBlobAsync(user.ImageId, "users");
+            }
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+
             return NoContent();
         }
     }
