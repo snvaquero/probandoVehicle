@@ -48,10 +48,10 @@ namespace Vehicles.API.Controllers.API
                 return BadRequest("Esa marca no existe.");
             }
 
-            User user = await _userHelper.GetUserAsync(request.UserId);
+            User user = await _userHelper.GetUserAsync(Guid.Parse(request.UserId));
             if (user == null)
             {
-                return BadRequest("Esa usuario no existe.");
+                return BadRequest("Ese usuario no existe.");
             }
 
             Vehicle vehicle = await _context.Vehicles.FindAsync(request.Id);
@@ -102,10 +102,10 @@ namespace Vehicles.API.Controllers.API
                 return BadRequest("Esa marca no existe.");
             }
 
-            User user = await _userHelper.GetUserAsync(request.UserId);
+            User user = await _userHelper.GetUserAsync(Guid.Parse(request.UserId));
             if (user == null)
             {
-                return BadRequest("Esa usuario no existe.");
+                return BadRequest("Ese usuario no existe.");
             }
 
             Vehicle vehicle = await _context.Vehicles.FirstOrDefaultAsync(x => x.Plaque.ToUpper() == request.Plaque.ToUpper());
@@ -117,7 +117,7 @@ namespace Vehicles.API.Controllers.API
             Guid imageId = Guid.Empty;
             if (request.Image != null && request.Image.Length > 0)
             {
-                imageId = await _blobHelper.UploadBlobAsync(request.Image, "users");
+                imageId = await _blobHelper.UploadBlobAsync(request.Image, "vehiclephotos");
             }
 
             vehicle = new Vehicle
