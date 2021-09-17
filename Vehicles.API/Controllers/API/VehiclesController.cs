@@ -48,17 +48,20 @@ namespace Vehicles.API.Controllers.API
                 return BadRequest("Esa marca no existe.");
             }
 
-            User user = await _userHelper.GetUserAsync(Guid.Parse(request.UserId));
-            if (user == null)
-            {
-                return BadRequest("Ese usuario no existe.");
-            }
-
             Vehicle vehicle = await _context.Vehicles.FindAsync(request.Id);
             if (vehicle == null)
             {
                 return BadRequest("Esa vehículo no existe.");
             }
+
+            vehicle.Brand = brand;
+            vehicle.Color = request.Color;
+            vehicle.Line = request.Line;
+            vehicle.Model = request.Model;
+            vehicle.Plaque = request.Plaque;
+            vehicle.Remarks = request.Remarks;
+            vehicle.VehicleType = vehicleType;
+            _context.Entry(vehicle).State = EntityState.Modified;
 
             try
             {
