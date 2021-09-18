@@ -33,5 +33,7 @@ namespace Vehicles.API.Models.Requests
 
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public int DocumentTypeId { get; set; }
+
+        public string Password { get; set; }
     }
 }
