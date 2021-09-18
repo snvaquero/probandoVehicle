@@ -8,9 +8,9 @@
 
         public int ProcedureId { get; set; }
 
-        public decimal LaborPrice { get; set; }
+        public int LaborPrice { get; set; }
 
-        public decimal SparePartsPrice { get; set; }
+        public int SparePartsPrice { get; set; }
 
         public string Remarks { get; set; }
     }
