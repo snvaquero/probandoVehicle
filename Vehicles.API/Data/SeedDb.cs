@@ -30,7 +30,7 @@ namespace Vehicles.API.Data
             await CheckUserAsync("2020", "Juan", "Zuluaga", "zulu@yopmail.com", "311 322 4620", "Calle Luna Calle Sol", UserType.User);
             await CheckUserAsync("3030", "Ledys", "Bedoya", "ledys@yopmail.com", "311 322 4620", "Calle Luna Calle Sol", UserType.User);
             await CheckUserAsync("4040", "Sandra", "Lopera", "sandra@yopmail.com", "311 322 4620", "Calle Luna Calle Sol", UserType.Admin);
-            await CheckUserAsync("5040", "Sra", "Lo", "sandra@yopmail.com", "311 322 4620", "Calle Luna Calle Sol", UserType.Admin);
+            await CheckUserAsync("5040", "Sraaaa", "Lo", "sandra@yopmail.com", "311 322 4620", "Calle Luna Calle Sol", UserType.Admin);
 
         }
 
